@@ -1,37 +1,23 @@
 require('./config/config');
-const express = require('express')
-const app = express()
-const bodyParser = require('body-parser')
+const express = require('express');
+const mongoose = require('mongoose');
+const app = express();
+const bodyParser = require('body-parser');
 
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(bodyParser.json());
 
-app.get('/usuario', function(req, res) {
-    res.json('get usuario')
-})
-app.post('/usuario', function(req, res) {
-    let persona = req.body;
+app.use(require('./routes/api.js'));
 
-    if (persona.nombre === undefined) {
-        res.status(400).json({
-            ok: false,
-            mensaje: "El nombre es necesario"
-        })
-    } else {
-        res.json({ persona });
-    }
-})
-app.put('/usuario/:id', function(req, res) {
-    let id = req.params.id;
-    res.json({
-        id
-    })
-})
-app.delete('/usuario', function(req, res) {
-    res.json('delete usuario')
-})
+mongoose.connect(process.env.URLDB, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false,
+        useCreateIndex: true
+    }).then(db => console.log('conexion exitosa'))
+    .catch(err => console.log('error: ', err))
 
 app.listen(process.env.PORT, () => {
     console.log("Escuchando puerto 3000");
